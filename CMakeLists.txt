@@ -64,7 +64,7 @@ include( DQM4hepMacros )
 # ----- Compile our software -----
 add_subdirectory( DQMCore )
 add_subdirectory( DQMNet )
-add_subdirectory( DQMOnline )
+# add_subdirectory( DQMOnline )
 if( DQM4hep_TESTING )
   set( BUILD_TESTING ON )
   enable_testing()
