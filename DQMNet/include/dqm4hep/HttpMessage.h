@@ -40,6 +40,9 @@ namespace dqm4hep {
 
       }
       
+      /**
+       *  @brief  Whether the message is valid
+       */
       inline bool isValid() const {
         return (m_httpMessage != nullptr);
       }
@@ -117,6 +120,7 @@ namespace dqm4hep {
     private:
       /// The input mongoose http message
       struct http_message*          m_httpMessage = {nullptr};
+      /// The http query string object
       HttpQueryString               m_queryString;
     };
     
