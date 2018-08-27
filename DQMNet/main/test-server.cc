@@ -10,16 +10,19 @@
 
 #include <dqm4hep/NetworkEventLoop.h>
 #include <dqm4hep/Logging.h>
-#include <dqm4hep/ServerConnection.h>
+#include <dqm4hep/Server.h>
 
 using namespace dqm4hep::net;
 
 int main(int argc, char ** argv) {
   
   NetworkEventLoop eventLoop;
-  ServerConnection connection(&eventLoop);
+  Server server(&eventLoop);
   
-  connection.onHttpRequest([](const HttpMessage& message, HttpResponse& response){
+  server.setName("TEST");
+  server.setUseNetworkManager(true);
+  
+  server.onHttpRequest([](const HttpMessage& message, HttpResponse& response){
     dqm_info( "---------------------------" );
     dqm_info( "-- Received HTTP request --" );
     dqm_info( "---------------------------" );    
@@ -35,34 +38,16 @@ int main(int argc, char ** argv) {
     dqm_info( "---------------------------" );
   });
   
-  connection.onNewConnection([](const Connection& con) {
-    dqm_info( "-- New connection, uri: {0}", con.uri() );
-  });
+  server.createService("/testint");
+  server.createService("/testfloat");
   
-  connection.onConnectionClose([](const Connection& con) {
-    dqm_info( "-- Closing connection, uri: {0}", con.uri() );
-  });
-  
-  connection.onMessage([&eventLoop,&connection](const Connection& con, const WebsocketMessage& message) {
-    dqm_info( "-- Received message, uri: {0}", con.uri() );
-    std::string inmsg(message.message(), message.length());
-    dqm_info( "-- Message: {0}", inmsg );
-    if(inmsg == "stop") {
-      connection.stop();
-      eventLoop.stop();
-    }
-    else {
-      connection.send(con, "Boubouuuuuuuu !");
-      connection.close(con);      
-    }
-  });
-  
-  ServerConnection::BindConfig config;
-  config.m_port = argc > 1 ? atoi(argv[1]) : 8000;
-  config.m_enableWebsockets = true;
-  config.m_enableHttpRequests = true;
-  
-  connection.bind(config);
+  if(argc > 1) {
+    server.start(atoi(argv[1]));
+  }
+  else {
+    server.start();    
+  }
+
   eventLoop.start(true, 200);
   
   return 0;
