@@ -33,10 +33,9 @@ namespace dqm4hep {
        *  @brief  Constructor
        *  
        *  @param str the input string describing the http query string
-       *  @param len the length of the query string
        */
-      HttpQueryString(const char *str, size_t len) :
-        m_queryString(str, len) {
+      HttpQueryString(const std::string& str) :
+        m_queryString(str) {
         core::StringVector tokens;
         core::tokenize(m_queryString, tokens, "&");
         for(auto token : tokens) {
