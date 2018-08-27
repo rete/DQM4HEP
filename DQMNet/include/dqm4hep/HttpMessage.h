@@ -36,57 +36,75 @@ namespace dqm4hep {
        */
       inline HttpMessage(struct http_message *msg) :
         m_httpMessage(msg),
-        m_queryString(msg->query_string.p, msg->query_string.len) {
+        m_queryString((msg != nullptr) ? std::string(msg->query_string.p, msg->query_string.len) : "") {
 
+      }
+      
+      inline bool isValid() const {
+        return (m_httpMessage != nullptr);
       }
       
       /**
        *  @brief  Get the full message buffer (request line, headers and body)
        */
       inline const char* message() const {
-        return m_httpMessage->message.p;
+        return isValid() ? m_httpMessage->message.p : nullptr;
       }
       
       /**
        *  @brief  Get the full message length (request line, headers and body)
        */
       inline size_t messageSize() const {
-        return m_httpMessage->message.len;
+        return isValid() ? m_httpMessage->message.len : 0;
       }
       
       /**
        *  @brief  Get the body message buffer (without request line and headers)
        */
       inline const char* body() const {
-        return m_httpMessage->body.p;
+        return isValid() ? m_httpMessage->body.p : nullptr;
       }
       
       /**
        *  @brief  Get the body message length (without request line and headers)
        */
       inline size_t bodySize() const {
-        return m_httpMessage->body.len;
+        return isValid() ? m_httpMessage->body.len : 0;
       }
       
       /**
        *  @brief  Get the http method (e.g "GET", "POST")
        */
       inline std::string method() const {
-        return std::string(m_httpMessage->method.p, m_httpMessage->method.len);
+        return isValid() ? std::string(m_httpMessage->method.p, m_httpMessage->method.len) : "";
       }
       
       /**
        *  @brief  Get the http URI (e.g "/file.html")
        */
       inline std::string uri() const {
-        return std::string(m_httpMessage->uri.p, m_httpMessage->uri.len);
+        return isValid() ? std::string(m_httpMessage->uri.p, m_httpMessage->uri.len) : "";
+      }
+      
+      /**
+       *  @brief  Get the status message
+       */
+      inline std::string statusMessage() const {
+        return isValid() ? std::string(m_httpMessage->resp_status_msg.p, m_httpMessage->resp_status_msg.len) : "";
+      }
+      
+      /**
+       *  @brief  Get the response code
+       */
+      inline int responseCode() const {
+        return isValid() ? m_httpMessage->resp_code : -1;
       }
       
       /**
        *  @brief  Get the http protocol (e.g "HTTP/1.1")
        */
       inline std::string protocol() const {
-        return std::string(m_httpMessage->proto.p, m_httpMessage->proto.len);
+        return isValid() ? std::string(m_httpMessage->proto.p, m_httpMessage->proto.len) : "";
       }
       
       /**
