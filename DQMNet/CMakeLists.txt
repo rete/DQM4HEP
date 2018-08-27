@@ -13,7 +13,11 @@ dqm4hep_package( DQMNet
 # build the DQMNet library
 dqm4hep_add_package_library( DQMNet
   SOURCES src/*.cc
-  DEFINITIONS -DMG_ENABLE_THREADS -DMG_ENABLE_HTTP_WEBSOCKET -DMG_ENABLE_HTTP
+  DEFINITIONS     
+    -DMG_ENABLE_THREADS 
+    -DMG_ENABLE_HTTP_WEBSOCKET 
+    -DMG_ENABLE_HTTP 
+    -DMG_ENABLE_BROADCAST
 )
 
 # -------------------------------------------------
@@ -26,7 +30,9 @@ dqm4hep_add_package_library( DQMNet
 # dqm4hep_add_executable( dqm4hep-server-running          SOURCES main/dqm4hep-server-running.cc )
 # dqm4hep_add_executable( dqm4hep-subscribe-service       SOURCES main/dqm4hep-subscribe-service.cc )
 # dqm4hep_add_executable( dqm4hep-test-ws-server          SOURCES main/test-ws-server.cc )
+dqm4hep_add_executable( dqm4hep-network-manager         SOURCES main/dqm4hep-network-manager.cc )
 dqm4hep_add_executable( dqm4hep-test-server             SOURCES main/test-server.cc )
+dqm4hep_add_executable( dqm4hep-test-client             SOURCES main/test-client.cc )
 
 # -------------------------------------------------
 # build the DQMNet doxygen documentation
