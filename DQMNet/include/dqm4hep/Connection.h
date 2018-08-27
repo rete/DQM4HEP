@@ -19,9 +19,9 @@ namespace dqm4hep {
     
     class Connection {
     public:
-      inline Connection(const std::string& uri, struct mg_connection *connection) :
+      inline Connection(const std::string& route, struct mg_connection *connection) :
         m_connection(connection),
-        m_uri(uri) {
+        m_route(route) {
         
       }
       
@@ -33,8 +33,8 @@ namespace dqm4hep {
         return m_connection->mgr;
       }
       
-      inline const std::string &uri() const {
-        return m_uri;
+      inline const std::string &route() const {
+        return m_route;
       }
       
       inline struct mg_connection* connection() const {
@@ -48,8 +48,24 @@ namespace dqm4hep {
       
     private:
       struct mg_connection*       m_connection = {nullptr};
-      std::string                 m_uri = {};
+      std::string                 m_route = {};
     };
+    
+    inline bool operator==(const Connection &lhs, const Connection &rhs) {
+      return (lhs.connection() == rhs.connection());
+    }
+    
+    inline bool operator!=(const Connection &lhs, const Connection &rhs) {
+      return (lhs.connection() != rhs.connection());
+    }
+    
+    inline bool operator>(const Connection &lhs, const Connection &rhs) {
+      return (lhs.connection() > rhs.connection());
+    }
+    
+    inline bool operator<(const Connection &lhs, const Connection &rhs) {
+      return (lhs.connection() < rhs.connection());
+    }
     
   }
   
