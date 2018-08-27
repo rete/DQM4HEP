@@ -20,6 +20,7 @@
 #include <dqm4hep/HttpResponse.h>
 #include <dqm4hep/Connection.h>
 #include <dqm4hep/WebsocketMessage.h>
+#include <dqm4hep/NetworkCommon.h>
 
 namespace dqm4hep {
   
@@ -27,10 +28,6 @@ namespace dqm4hep {
     
     class ServerConnection {
     public:
-      typedef std::function<void(const HttpMessage&, HttpResponse&)> HttpRequestFunction;
-      typedef std::function<void(const Connection&)> NewConnectionFunction;
-      typedef std::function<void(const Connection&)> ConnectionCloseFunction;
-      typedef std::function<void(const Connection&, const WebsocketMessage&)> MessageFunction;
       typedef std::map<struct mg_connection*, Connection> Connections;
       
       struct BindConfig {
@@ -48,8 +45,8 @@ namespace dqm4hep {
       
       // callbacks
       void onHttpRequest(HttpRequestFunction func);
-      void onNewConnection(NewConnectionFunction func);
-      void onConnectionClose(ConnectionCloseFunction func);
+      void onNewConnection(ConnectFunction func);
+      void onConnectionClose(CloseFunction func);
       void onMessage(MessageFunction func);
       
       void stop();
@@ -58,8 +55,8 @@ namespace dqm4hep {
       void send(const Connection &connection, const std::string& data);
       void send(const Connection &connection, const char *data, size_t length);
       
-      void broadcastUri(const std::string &uri, const std::string& data);
-      void broadcastUri(const std::string &uri, const char *data, size_t length);
+      void broadcastRoute(const std::string &route, const std::string& data);
+      void broadcastRoute(const std::string &route, const char *data, size_t length);
       
       void broadcast(const std::string& data);
       void broadcast(const char *data, size_t length);      
@@ -75,8 +72,8 @@ namespace dqm4hep {
       BindConfig                   m_bindConfig = {};
       // callback functions
       HttpRequestFunction          m_httpRequestFunction = {nullptr};
-      NewConnectionFunction        m_newConnectionFunction = {nullptr};
-      ConnectionCloseFunction      m_connectionCloseFunction = {nullptr};
+      ConnectFunction              m_newConnectionFunction = {nullptr};
+      CloseFunction                m_connectionCloseFunction = {nullptr};
       MessageFunction              m_messageFunction = {nullptr};
       Connections                  m_websocketConnections = {};
     };
