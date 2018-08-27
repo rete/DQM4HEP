@@ -42,6 +42,7 @@ namespace dqm4hep {
       NetworkEventLoop::Manager* mgr = m_eventLoop->manager();
       std::string portString = core::typeToString(m_bindConfig.m_port);
       struct mg_bind_opts options;
+      memset(&options, 0, sizeof(options));
       options.user_data = this;
       m_connection = mg_bind_opt(mgr, portString.c_str(), &ServerConnection::eventHandler, options);
       mg_set_protocol_http_websocket(m_connection);
@@ -57,11 +58,11 @@ namespace dqm4hep {
       m_httpRequestFunction = func;
     }
     
-    void ServerConnection::onNewConnection(NewConnectionFunction func) {
+    void ServerConnection::onNewConnection(ConnectFunction func) {
       m_newConnectionFunction = func;
     }
     
-    void ServerConnection::onConnectionClose(ConnectionCloseFunction func) {
+    void ServerConnection::onConnectionClose(CloseFunction func) {
       m_connectionCloseFunction = func;
     }
     
@@ -170,14 +171,14 @@ namespace dqm4hep {
       mg_send(connection.connection(), data, length);
     }
     
-    void ServerConnection::broadcastUri(const std::string &uri, const std::string& data) {
-      broadcastUri(uri, data.c_str(), data.size());
+    void ServerConnection::broadcastRoute(const std::string &route, const std::string& data) {
+      broadcastRoute(route, data.c_str(), data.size());
     }
     
-    void ServerConnection::broadcastUri(const std::string &uri, const char *data, size_t length) {
+    void ServerConnection::broadcastRoute(const std::string &route, const char *data, size_t length) {
       for(auto con : m_websocketConnections) {
-        if(con.second.uri() == uri) {
-          send(con.second, data, length);          
+        if(con.second.route() == route) {
+          send(con.second, data, length);
         }
       }
     }
