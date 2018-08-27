@@ -601,7 +601,74 @@ namespace dqm4hep {
      *  @param  sampleTime time between two sampling to compute rates, in \b seconds 
      */
     void netStats(NetworkStats &stats, int sampleTime = 1 /*s*/);
+    
+    /**
+     *  @brief  Os class
+     */
+    class Os {
+    public:
+      /**
+       *  @brief  Get a environment variable. If it is not found, 
+       *  then use the fallback value specified as second argument.
+       *  The variable is converted to the specified type
+       *
+       *  @param  var the environment variable name
+       *  @param  fallback the user fallback value if not found
+       */
+      template <typename T>
+      static T getenv(const std::string &var, const T &fallback);
+      
+      /**
+       *  @brief  Get a environment variable.
+       *  The variable is converted to the specified type
+       *
+       *  @param  var the environment variable name
+       */
+      template <typename T>
+      static T getenv(const std::string &var);
+    };
+    
+    template <typename T>
+    inline T Os::getenv(const std::string &var, const T &fallback) {
+      const char *env = ::getenv(var.c_str());
+      if(nullptr == env) {
+        return fallback;
+      }
+      std::string envStr = env;
+      T varType;
+      if(not core::stringToType(envStr, varType)) {
+        return fallback;
+      }
+      return varType;
+    }
+    
+
+    template <typename T>
+    inline T Os::getenv(const std::string &var) {
+      const char *env = ::getenv(var.c_str());
+      std::string envStr = (env != nullptr) ? env : "";
+      T varType;
+      core::stringToType(envStr, varType);
+      return varType;
+    }
+    
+    template <>
+    inline std::string Os::getenv(const std::string &var, const std::string &fallback) {
+      const char *env = ::getenv(var.c_str());
+      if(nullptr == env) {
+        return fallback;
+      }
+      return std::string(env);
+    }
+    
+    template <>
+    inline std::string Os::getenv(const std::string &var) {
+      const char *env = ::getenv(var.c_str());
+      return (env != nullptr) ? env : "";
+    }
+    
   } // namespace core
+  
 } // namespace dqm4hep
 
 #endif //  DQM4HEP_INTERNAL_H
